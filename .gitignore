@@ -1,5 +1,7 @@
 .idea
 /.idea
+/.idea/*
+/.idea/**
 
 /public/build/fonts/glyphicons-*
 /public/build/images/glyphicons-*
