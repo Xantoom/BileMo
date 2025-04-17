@@ -9,7 +9,14 @@
         "php": ">=8.3.19",
         "ext-ctype": "*",
         "ext-iconv": "*",
+        "doctrine/dbal": "^3",
+        "doctrine/doctrine-bundle": "^2.14",
+        "doctrine/doctrine-migrations-bundle": "^3.4",
+        "doctrine/orm": "^3.3",
+        "lexik/jwt-authentication-bundle": "^3.1",
+        "nelmio/cors-bundle": "^2.5",
         "runtime/frankenphp-symfony": "^0.2.0",
+        "symfony/cache": "7.2.*",
         "symfony/console": "7.2.*",
         "symfony/dotenv": "7.2.*",
         "symfony/flex": "^2",
@@ -67,5 +74,8 @@
             "require": "7.2.*",
             "docker": true
         }
+    },
+    "require-dev": {
+        "doctrine/doctrine-fixtures-bundle": "^4.1"
     }
 }

@@ -86,3 +86,11 @@ drop-db: ## Drop the database
 	@$(SYMFONY) doctrine:database:drop --force
 
 reset-db: drop-db load-db load-fixtures ## Drop the database, delete the uploads, load migrations and load fixtures
+
+## —— LexikJWT 🏰 ——————————————————————————————————————————————————————————————
+jwt: ## List all JWT commands or pass the parameter "c=" to run a given command, example: make jwt c='lexik:jwt:generate-keypair'
+	@$(eval c ?=)
+	@$(SYMFONY) lexik:jwt:$(c)
+
+generate-keypair: ## Generate the JWT keypair
+	@$(SYMFONY) lexik:jwt:generate-keypair --skip-if-exists
