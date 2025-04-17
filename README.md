@@ -2,7 +2,7 @@
 
 > BileMo est un projet de formation de la formation Développeur PHP Symfony d'OpenClassrooms. Il s'agit d'une API qui permet de gérer des produits, des utilisateurs et des clients.
 
-Étape du projet : 10%
+Étape du projet : 60%
 
 ---
 
