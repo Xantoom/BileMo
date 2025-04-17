@@ -9,6 +9,7 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Faker;
 use Faker\Generator;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AppFixtures extends Fixture
 {
@@ -19,7 +20,12 @@ class AppFixtures extends Fixture
 	private array $customers = [];
 	private array $products = [];
 
-    public function load(ObjectManager $manager): void
+	public function __construct(
+		private readonly UserPasswordHasherInterface $passwordHasher,
+	) {
+	}
+
+	public function load(ObjectManager $manager): void
     {
 	    $this->faker = Faker\Factory::create('fr_FR');
 		$this->manager = $manager;
@@ -44,14 +50,16 @@ class AppFixtures extends Fixture
 
 	private function createUsers(): void
 	{
+		$password = 'password';
+
 		foreach ($this->customers as $customer) {
 			for ($i = 0; $i < 4; $i++) {
 				$user = (new User())
 					->setEmail($this->faker->email())
-					->setPassword($this->faker->password())
 					->setRoles(['ROLE_USER'])
 					->setCustomer($customer)
 				;
+				$user->setPassword($this->passwordHasher->hashPassword($user, $password));
 				$this->manager->persist($user);
 				$this->users[] = $user;
 			}
