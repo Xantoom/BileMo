@@ -178,5 +178,3 @@ Retrieves a paginated list of users linked to a specific customer.
         ```
 
 ---
-
-*(Add sections for other endpoints like creating/deleting users, managing customers, etc., as they are implemented.)*
