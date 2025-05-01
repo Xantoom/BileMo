@@ -29,13 +29,15 @@ class GetProductController extends AbstractController
 			return new JsonResponse(['error' => 'Product not found'], Response::HTTP_NOT_FOUND);
 		}
 
+		$cacheTime = 24 * 3600; // 24 hours
+
 		// Create cache key based on product ID
 		$cacheKey = sprintf('product_%d', $product->getId());
 
 		// Get or create the cached response
-		$responseData = $cache->get($cacheKey, function (ItemInterface $item) use ($product, $urlGenerator) {
-			// Set cache lifetime to 1 hour
-			$item->expiresAfter(3600);
+		$responseData = $cache->get($cacheKey, function (ItemInterface $item) use ($cacheTime, $product, $urlGenerator) {
+			// Set cache lifetime to 24 hours
+			$item->expiresAfter($cacheTime);
 
 			// Add cache tags for invalidation
 			$item->tag(['products', 'product_' . $product->getId()]);
@@ -59,8 +61,8 @@ class GetProductController extends AbstractController
 		// Add HTTP cache headers
 		$response
 			->setPublic()
-			->setMaxAge(3600)
-			->setSharedMaxAge(3600)
+			->setMaxAge($cacheTime)
+			->setSharedMaxAge($cacheTime)
 			->setEtag(md5($json))
 			->isNotModified($request);
 

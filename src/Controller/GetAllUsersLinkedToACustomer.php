@@ -32,6 +32,8 @@ class GetAllUsersLinkedToACustomer extends AbstractController
 			return new JsonResponse(['error' => 'Customer not found'], Response::HTTP_NOT_FOUND);
 		}
 
+		$cacheTime = 60; // 1 minute
+
 		// Get pagination parameters
 		$page = $request->query->getInt('page', 1);
 		$limit = $request->query->getInt('limit', 10);
@@ -40,9 +42,9 @@ class GetAllUsersLinkedToACustomer extends AbstractController
 		$cacheKey = sprintf('customer_%d_users_page_%d_limit_%d', $id, $page, $limit);
 
 		// Get or create the cached response
-		$responseData = $cache->get($cacheKey, function (ItemInterface $item) use ($id, $page, $limit, $customer, $urlGenerator) {
+		$responseData = $cache->get($cacheKey, function (ItemInterface $item) use ($cacheTime, $id, $page, $limit, $customer, $urlGenerator) {
 			// Set cache lifetime to 1 hour
-			$item->expiresAfter(3600);
+			$item->expiresAfter($cacheTime);
 
 			// Add cache tags for invalidation
 			$item->tag(['users', 'customer_' . $id . '_users']);
@@ -86,8 +88,8 @@ class GetAllUsersLinkedToACustomer extends AbstractController
 		// Add HTTP cache headers
 		$response
 			->setPublic()
-			->setMaxAge(3600)
-			->setSharedMaxAge(3600)
+			->setMaxAge($cacheTime)
+			->setSharedMaxAge($cacheTime)
 			->setEtag(md5($json))
 			->isNotModified($request);
 
