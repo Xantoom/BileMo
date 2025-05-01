@@ -52,4 +52,10 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
 		return new Paginator($query);
 	}
+
+	public function save(User $user): void
+	{
+		$this->getEntityManager()->persist($user);
+		$this->getEntityManager()->flush();
+	}
 }
