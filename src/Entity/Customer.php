@@ -24,7 +24,7 @@ class Customer
     /**
      * @var Collection<int, User>
      */
-    #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'customer')]
+    #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'customer', cascade: ['persist', 'remove'])]
     private Collection $users;
 
     public function __construct()

@@ -32,4 +32,30 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->getEntityManager()->persist($user);
         $this->getEntityManager()->flush();
     }
+
+	/**
+	 * @param int $customerId
+	 * @param int $page
+	 * @param int $limit
+	 * @return Paginator<User>
+	 */
+	public function findByCustomerPaginated(int $customerId, int $page = 1, int $limit = 10): Paginator
+	{
+		$query = $this->createQueryBuilder('u')
+			->andWhere('u.customer = :customerId')
+			->setParameter('customerId', $customerId)
+			->orderBy('u.email', 'ASC')
+			->getQuery()
+			->setFirstResult(($page - 1) * $limit)
+			->setMaxResults($limit)
+		;
+
+		return new Paginator($query);
+	}
+
+	public function save(User $user): void
+	{
+		$this->getEntityManager()->persist($user);
+		$this->getEntityManager()->flush();
+	}
 }
