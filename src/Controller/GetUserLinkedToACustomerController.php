@@ -24,6 +24,11 @@ class GetUserLinkedToACustomerController extends AbstractController
 		TagAwareCacheInterface $cache,
 		Request $request
 	): JsonResponse {
+		$userConnected = $this->getUser();
+		if (!$userConnected) {
+			return new JsonResponse(['error' => 'User not connected'], Response::HTTP_UNAUTHORIZED);
+		}
+
 		$user = $userRepository->find($id);
 		if (!$user) {
 			return new JsonResponse(['error' => 'User not found'], Response::HTTP_NOT_FOUND);
@@ -32,6 +37,21 @@ class GetUserLinkedToACustomerController extends AbstractController
 		// Check if user is linked to a customer
 		if (!$user->getCustomer()) {
 			return new JsonResponse(['error' => 'User is not linked to any customer'], Response::HTTP_NOT_FOUND);
+		}
+
+		$userConnected = $userRepository->findOneBy(['email' => $userConnected->getUserIdentifier()]);
+		if (!$userConnected) {
+			return new JsonResponse(['error' => 'User not found'], Response::HTTP_NOT_FOUND);
+		}
+
+		if (!$this->isGranted('ROLE_ADMIN')) {
+			if (!$userConnected->getCustomer()) {
+				return new JsonResponse(['error' => 'User not linked to any customer'], Response::HTTP_NOT_FOUND);
+			}
+
+			if ($userConnected->getCustomer()->getId() !== $user->getCustomer()->getId()) {
+				return new JsonResponse(['error' => 'User not linked to the same customer'], Response::HTTP_FORBIDDEN);
+			}
 		}
 
 		$cacheTime = 60; // 1 minute
