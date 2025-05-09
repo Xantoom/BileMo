@@ -66,16 +66,28 @@ class PostAddUserToCustomerController extends AbstractController
 		$links = [
 			'self' => $urlGenerator->generate('api_get_user_linked_to_a_customer', ['id' => $user->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
 			'customer' => $urlGenerator->generate('api_get_product', ['id' => $customer->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
-			'customer_users' => $urlGenerator->generate('api_get_customer_users', ['id' => $customer->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
+			'customer_users' => $urlGenerator->generate('api_get_customer_users', referenceType: UrlGeneratorInterface::ABSOLUTE_URL),
 		];
 
 		// Build response
 		$responseData = [
-			'data' => $user,
+			'data' => [
+				'id' => $user->getId(),
+				'email' => $user->getEmail(),
+				'roles' => $user->getRoles(),
+				'customer_id' => $customer->getId(),
+			],
 			'_links' => $links
 		];
 
-		$json = $serializer->serialize($responseData, 'json');
+		$context = [
+			'circular_reference_handler' => function ($object) {
+				return $object->getId();
+			},
+			'enable_max_depth' => true,
+		];
+
+		$json = $serializer->serialize($responseData, 'json', $context);
 		$response = new JsonResponse($json, Response::HTTP_CREATED, [], true);
 
 		// Add HTTP cache headers

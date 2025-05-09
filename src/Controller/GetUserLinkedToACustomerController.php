@@ -51,12 +51,17 @@ class GetUserLinkedToACustomerController extends AbstractController
 			$links = [
 				'self' => $urlGenerator->generate('api_get_user_linked_to_a_customer', ['id' => $user->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
 				'customer' => $urlGenerator->generate('api_get_product', ['id' => $user->getCustomer()?->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
-				'customer_users' => $urlGenerator->generate('api_get_customer_users', ['id' => $user->getCustomer()?->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
+				'customer_users' => $urlGenerator->generate('api_get_customer_users', referenceType:  UrlGeneratorInterface::ABSOLUTE_URL),
 			];
 
 			// Build response
 			return [
-				'data' => $user,
+				'data' => [
+					'id' => $user->getId(),
+					'email' => $user->getEmail(),
+					'roles' => $user->getRoles(),
+					'customer_id' => $user->getCustomer()?->getId(),
+				],
 				'_links' => $links
 			];
 		});
