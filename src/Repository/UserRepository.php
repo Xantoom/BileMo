@@ -37,20 +37,41 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 	 * @param int $customerId
 	 * @param int $page
 	 * @param int $limit
-	 * @return Paginator<User>
+	 * @return array
 	 */
-	public function findByCustomerPaginated(int $customerId, int $page = 1, int $limit = 10): Paginator
+	public function findSimplifiedUsersByCustomerPaginated(int $customerId, int $page = 1, int $limit = 10): array
 	{
-		$query = $this->createQueryBuilder('u')
+		$qb = $this->createQueryBuilder('u')
+			->select('u.id, u.email, u.roles')
 			->andWhere('u.customer = :customerId')
 			->setParameter('customerId', $customerId)
 			->orderBy('u.email', 'ASC')
-			->getQuery()
 			->setFirstResult(($page - 1) * $limit)
-			->setMaxResults($limit)
-		;
+			->setMaxResults($limit);
 
-		return new Paginator($query);
+		$query = $qb->getQuery();
+
+		// Get the total count for pagination metadata
+		$countQb = $this->createQueryBuilder('u')
+			->select('COUNT(u.id)')
+			->andWhere('u.customer = :customerId')
+			->setParameter('customerId', $customerId);
+
+		$totalItems = (int)$countQb->getQuery()->getSingleScalarResult();
+		$totalPages = ceil($totalItems / $limit);
+
+		// Execute the query to get the simplified data
+		$users = $query->getArrayResult();
+
+		return [
+			'users' => $users,
+			'pagination' => [
+				'total_items' => $totalItems,
+				'total_pages' => (int) $totalPages,
+				'current_page' => $page,
+				'per_page' => $limit
+			]
+		];
 	}
 
 	public function save(User $user): void
