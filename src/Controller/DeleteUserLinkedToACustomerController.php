@@ -54,6 +54,6 @@ class DeleteUserLinkedToACustomerController extends AbstractController
 		]);
 
 		// Return a 200 OK response with success message
-		return new JsonResponse(['message' => 'User successfully deleted'], Response::HTTP_OK);
+		return new JsonResponse(['message' => 'User successfully deleted'], Response::HTTP_NO_CONTENT);
 	}
 }
